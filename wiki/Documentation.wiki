@@ -27,13 +27,19 @@ Command history is access with the Up and Down arrow on a single line input or C
 
 In this mode, you can only configure the serial speed and IO color and font.
 
+== Console tab ==
+
 You can send binary data by beginning your line with "bytes" followed by any number of hexadecimal or binary number. You can also use a multiplier before each byte to repeat them. Example:
 {{{
 bytes 5*0xFF b01010101 2*0xe0
 }}}
 would send 5 time 0xff followed by 0x55 followed by 2 time 0xe0. In the console, bytes you send are between {{{[]}}} and bytes you receive between {} or as letter.
 
-The multiline input as a basic script highlighter.  If you start your script with "basic" written on the first line, unnumbered comment will not be sent to the bus pirate; allowing you to comment you script as much as you like without clogging the Bus Pirate memory.
+The multiline input has a basic script highlighter.  If you start your script with "basic" written on the first line, unnumbered comment will not be sent to the bus pirate; allowing you to comment you script as much as you like without clogging the Bus Pirate memory.
+
+== Firmware tab ==
+
+This allow you to update the firmware of your Bus Pirate v3. Please be in HiZ when entering this tab so that Buccaneer's Den can correctly identify your current Bus Pirate firmware and hardware version.
 
 = Line Console =
 
