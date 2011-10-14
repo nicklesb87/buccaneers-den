@@ -5,6 +5,7 @@ INCLUDEPATH += ../qserialdevice/src/qserialdeviceenumerator
 CONFIG(debug, debug|release):LIBS += ../qserialdevice/src/build/debug/libqserialdeviced.a
 else:LIBS += ../qserialdevice/src/build/release/libqserialdevice.a
 unix:LIBS += -ludev
+win32:LIBS += -lsetupapi -luuid -ladvapi32
 SOURCES += main.cpp \
     mainwindow.cpp \
     BusPirate/buspirategui.cpp \
