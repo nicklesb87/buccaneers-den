@@ -1,9 +1,18 @@
 TARGET = BuccaneersDen
 TEMPLATE = app
 INCLUDEPATH += ../qserialdevice/include
-LIBS += ../qserialdevice/src/libSerialPort.a
+
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+    LIBS += ../qserialdevice/src/debug/libSerialPort.a
+} else {
+    DESTDIR = release
+    LIBS += ../qserialdevice/src/release/libSerialPort.a
+}
+
 unix:LIBS += -ludev
 win32:LIBS += -lsetupapi -luuid -ladvapi32
+
 SOURCES += main.cpp \
     mainwindow.cpp \
     BusPirate/buspirategui.cpp \
