@@ -19,7 +19,7 @@
  *
  *****************************************************************************/
 #include "linedeviceconfig.h"
-#include <abstractserial.h>
+#include <serialport.h>
 #include <QtGui>
 
 LineDeviceConfig::LineDeviceConfig(QWidget *parent) :
@@ -203,108 +203,114 @@ void LineDeviceConfig::InitBaudsBox(void)
         return;
 
     m_PossibleBauds = new QComboBox;
-    m_PossibleBauds->insertItem(0, "4000000", AbstractSerial::BaudRate4000000);
-    m_PossibleBauds->insertItem(1, "3500000", AbstractSerial::BaudRate3500000);
-    m_PossibleBauds->insertItem(2, "3000000", AbstractSerial::BaudRate3000000);
-    m_PossibleBauds->insertItem(3, "2500000", AbstractSerial::BaudRate2500000);
-    m_PossibleBauds->insertItem(4, "2000000", AbstractSerial::BaudRate2000000);
-    m_PossibleBauds->insertItem(5, "1500000", AbstractSerial::BaudRate1500000);
-    m_PossibleBauds->insertItem(6, "1152000", AbstractSerial::BaudRate1152000);
-    m_PossibleBauds->insertItem(7, "1000000", AbstractSerial::BaudRate1000000);
-    m_PossibleBauds->insertItem(8, "921600", AbstractSerial::BaudRate921600);
-    m_PossibleBauds->insertItem(9, "576000", AbstractSerial::BaudRate576000);
-    m_PossibleBauds->insertItem(10, "500000", AbstractSerial::BaudRate500000);
-    m_PossibleBauds->insertItem(11, "460800", AbstractSerial::BaudRate460800);
-    m_PossibleBauds->insertItem(12, "256000", AbstractSerial::BaudRate256000);
-    m_PossibleBauds->insertItem(13, "230400", AbstractSerial::BaudRate230400);
-    m_PossibleBauds->insertItem(14, "128000", AbstractSerial::BaudRate128000);
-    m_PossibleBauds->insertItem(15, "115200", AbstractSerial::BaudRate115200);
-    m_PossibleBauds->insertItem(16, "57600", AbstractSerial::BaudRate57600);
-    m_PossibleBauds->insertItem(17, "38400", AbstractSerial::BaudRate38400);
-    m_PossibleBauds->insertItem(18, "19200", AbstractSerial::BaudRate19200);
-    m_PossibleBauds->insertItem(19, "9600", AbstractSerial::BaudRate9600);
-    m_PossibleBauds->insertItem(20, "4800", AbstractSerial::BaudRate4800);
-    m_PossibleBauds->insertItem(21, "2400", AbstractSerial::BaudRate2400);
-    m_PossibleBauds->insertItem(22, "1200", AbstractSerial::BaudRate1200);
-    m_PossibleBauds->insertItem(23, "300", AbstractSerial::BaudRate300);
+#if 0
+    m_PossibleBauds->insertItem(0, "4000000", SerialPort::Rate4000000);
+    m_PossibleBauds->insertItem(1, "3500000", SerialPort::Rate3500000);
+    m_PossibleBauds->insertItem(2, "3000000", SerialPort::Rate3000000);
+    m_PossibleBauds->insertItem(3, "2500000", SerialPort::Rate2500000);
+    m_PossibleBauds->insertItem(4, "2000000", SerialPort::Rate2000000);
+    m_PossibleBauds->insertItem(5, "1500000", SerialPort::Rate1500000);
+    m_PossibleBauds->insertItem(6, "1152000", SerialPort::Rate1152000);
+    m_PossibleBauds->insertItem(7, "1000000", SerialPort::Rate1000000);
+    m_PossibleBauds->insertItem(8, "921600", SerialPort::Rate921600);
+    m_PossibleBauds->insertItem(9, "576000", SerialPort::Rate576000);
+    m_PossibleBauds->insertItem(10, "500000", SerialPort::Rate500000);
+    m_PossibleBauds->insertItem(11, "460800", SerialPort::Rate460800);
+    m_PossibleBauds->insertItem(12, "256000", SerialPort::Rate256000);
+    m_PossibleBauds->insertItem(13, "230400", SerialPort::Rate230400);
+    m_PossibleBauds->insertItem(14, "128000", SerialPort::Rate128000);
+#endif
+    m_PossibleBauds->insertItem(15, "115200", SerialPort::Rate115200);
+    m_PossibleBauds->insertItem(16, "57600", SerialPort::Rate57600);
+    m_PossibleBauds->insertItem(17, "38400", SerialPort::Rate38400);
+    m_PossibleBauds->insertItem(18, "19200", SerialPort::Rate19200);
+    m_PossibleBauds->insertItem(19, "9600", SerialPort::Rate9600);
+    m_PossibleBauds->insertItem(20, "4800", SerialPort::Rate4800);
+    m_PossibleBauds->insertItem(21, "2400", SerialPort::Rate2400);
+    m_PossibleBauds->insertItem(22, "1200", SerialPort::Rate1200);
+//    m_PossibleBauds->insertItem(23, "300", SerialPort::BaudRate300);
     m_PossibleBauds->setCurrentIndex(15);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("BaudRate", AbstractSerial::BaudRate115200).toInt();
+    int configValue = settings.value("BaudRate", SerialPort::Rate115200).toInt();
     switch(configValue) {
-    case AbstractSerial::BaudRate4000000:
+#if 0
+    case SerialPort::Rate4000000:
         m_PossibleBauds->setCurrentIndex(0);
         break;
-    case AbstractSerial::BaudRate3500000:
+    case SerialPort::Rate3500000:
         m_PossibleBauds->setCurrentIndex(1);
         break;
-    case AbstractSerial::BaudRate3000000:
+    case SerialPort::Rate3000000:
         m_PossibleBauds->setCurrentIndex(2);
         break;
-    case AbstractSerial::BaudRate2500000:
+    case SerialPort::Rate2500000:
         m_PossibleBauds->setCurrentIndex(3);
         break;
-    case AbstractSerial::BaudRate2000000:
+    case SerialPort::Rate2000000:
         m_PossibleBauds->setCurrentIndex(4);
         break;
-    case AbstractSerial::BaudRate1500000:
+    case SerialPort::Rate1500000:
         m_PossibleBauds->setCurrentIndex(5);
         break;
-    case AbstractSerial::BaudRate1152000:
+    case SerialPort::Rate1152000:
         m_PossibleBauds->setCurrentIndex(6);
         break;
-    case AbstractSerial::BaudRate1000000:
+    case SerialPort::Rate1000000:
         m_PossibleBauds->setCurrentIndex(7);
         break;
-    case AbstractSerial::BaudRate921600:
+    case SerialPort::Rate921600:
         m_PossibleBauds->setCurrentIndex(8);
         break;
-    case AbstractSerial::BaudRate576000:
+    case SerialPort::Rate576000:
         m_PossibleBauds->setCurrentIndex(9);
         break;
-    case AbstractSerial::BaudRate500000:
+    case SerialPort::Rate500000:
         m_PossibleBauds->setCurrentIndex(10);
         break;
-    case AbstractSerial::BaudRate460800:
+    case SerialPort::Rate460800:
         m_PossibleBauds->setCurrentIndex(11);
         break;
-    case AbstractSerial::BaudRate256000:
+    case SerialPort::Rate256000:
         m_PossibleBauds->setCurrentIndex(12);
         break;
-    case AbstractSerial::BaudRate230400:
+    case SerialPort::Rate230400:
         m_PossibleBauds->setCurrentIndex(13);
         break;
-    case AbstractSerial::BaudRate128000:
+    case SerialPort::Rate128000:
         m_PossibleBauds->setCurrentIndex(14);
         break;
-    case AbstractSerial::BaudRate115200:
+#endif
+    case SerialPort::Rate115200:
         m_PossibleBauds->setCurrentIndex(15);
         break;
-    case AbstractSerial::BaudRate57600:
+    case SerialPort::Rate57600:
         m_PossibleBauds->setCurrentIndex(16);
         break;
-    case AbstractSerial::BaudRate38400:
+    case SerialPort::Rate38400:
         m_PossibleBauds->setCurrentIndex(17);
         break;
-    case AbstractSerial::BaudRate19200:
+    case SerialPort::Rate19200:
         m_PossibleBauds->setCurrentIndex(18);
         break;
-    case AbstractSerial::BaudRate9600:
+    case SerialPort::Rate9600:
         m_PossibleBauds->setCurrentIndex(19);
         break;
-    case AbstractSerial::BaudRate4800:
+    case SerialPort::Rate4800:
         m_PossibleBauds->setCurrentIndex(20);
         break;
-    case AbstractSerial::BaudRate2400:
+    case SerialPort::Rate2400:
         m_PossibleBauds->setCurrentIndex(21);
         break;
-    case AbstractSerial::BaudRate1200:
+    case SerialPort::Rate1200:
         m_PossibleBauds->setCurrentIndex(22);
         break;
-    case AbstractSerial::BaudRate300:
+#if 0
+    case SerialPort::Rate300:
         m_PossibleBauds->setCurrentIndex(23);
         break;
+#endif
     }
     connect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
 }
@@ -315,25 +321,25 @@ void LineDeviceConfig::InitDataBitsBox(void)
         return;
 
     m_PossibleDataBits = new QComboBox;
-    m_PossibleDataBits->insertItem(0, "8", AbstractSerial::DataBits8);
-    m_PossibleDataBits->insertItem(1, "7", AbstractSerial::DataBits7);
-    m_PossibleDataBits->insertItem(2, "6", AbstractSerial::DataBits6);
-    m_PossibleDataBits->insertItem(3, "5", AbstractSerial::DataBits5);
+    m_PossibleDataBits->insertItem(0, "8", SerialPort::Data8);
+    m_PossibleDataBits->insertItem(1, "7", SerialPort::Data7);
+    m_PossibleDataBits->insertItem(2, "6", SerialPort::Data6);
+    m_PossibleDataBits->insertItem(3, "5", SerialPort::Data5);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("DataBits", AbstractSerial::DataBits8).toInt();
+    int configValue = settings.value("DataBits", SerialPort::Data8).toInt();
     switch(configValue) {
-    case AbstractSerial::DataBits8:
+    case SerialPort::Data8:
         m_PossibleDataBits->setCurrentIndex(0);
         break;
-    case AbstractSerial::DataBits7:
+    case SerialPort::Data7:
         m_PossibleDataBits->setCurrentIndex(1);
         break;
-    case AbstractSerial::DataBits6:
+    case SerialPort::Data6:
         m_PossibleDataBits->setCurrentIndex(2);
         break;
-    case AbstractSerial::DataBits5:
+    case SerialPort::Data5:
         m_PossibleDataBits->setCurrentIndex(3);
         break;
     }
@@ -346,29 +352,29 @@ void LineDeviceConfig::InitParityBox(void)
         return;
 
     m_PossibleParity = new QComboBox;
-    m_PossibleParity->insertItem(0, "None", AbstractSerial::ParityNone);
-    m_PossibleParity->insertItem(1, "Odd", AbstractSerial::ParityOdd);
-    m_PossibleParity->insertItem(2, "Even", AbstractSerial::ParityEven);
-    m_PossibleParity->insertItem(3, "Mark", AbstractSerial::ParityMark);
-    m_PossibleParity->insertItem(4, "Space", AbstractSerial::ParitySpace);
+    m_PossibleParity->insertItem(0, "None", SerialPort::NoParity);
+    m_PossibleParity->insertItem(1, "Odd", SerialPort::OddParity);
+    m_PossibleParity->insertItem(2, "Even", SerialPort::EvenParity);
+    m_PossibleParity->insertItem(3, "Mark", SerialPort::MarkParity);
+    m_PossibleParity->insertItem(4, "Space", SerialPort::SpaceParity);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("Parity", AbstractSerial::ParityNone).toInt();
+    int configValue = settings.value("Parity", SerialPort::NoParity).toInt();
     switch(configValue) {
-    case AbstractSerial::ParityNone:
+    case SerialPort::NoParity:
         m_PossibleParity->setCurrentIndex(0);
         break;
-    case AbstractSerial::ParityOdd:
+    case SerialPort::OddParity:
         m_PossibleParity->setCurrentIndex(1);
         break;
-    case AbstractSerial::ParityEven:
+    case SerialPort::EvenParity:
         m_PossibleParity->setCurrentIndex(2);
         break;
-    case AbstractSerial::ParityMark:
+    case SerialPort::MarkParity:
         m_PossibleParity->setCurrentIndex(3);
         break;
-    case AbstractSerial::ParitySpace:
+    case SerialPort::SpaceParity:
         m_PossibleParity->setCurrentIndex(4);
         break;
     }
@@ -381,21 +387,21 @@ void LineDeviceConfig::InitStopBitsBox(void)
         return;
 
     m_PossibleStopBits = new QComboBox;
-    m_PossibleStopBits->insertItem(0, "One", AbstractSerial::StopBits1);
-    m_PossibleStopBits->insertItem(1, "Half", AbstractSerial::StopBits1_5);
-    m_PossibleStopBits->insertItem(2, "Two", AbstractSerial::StopBits2);
+    m_PossibleStopBits->insertItem(0, "One", SerialPort::OneStop);
+    m_PossibleStopBits->insertItem(1, "Half", SerialPort::OneAndHalfStop);
+    m_PossibleStopBits->insertItem(2, "Two", SerialPort::TwoStop);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("StopBits", AbstractSerial::StopBits1).toInt();
+    int configValue = settings.value("StopBits", SerialPort::OneStop).toInt();
     switch(configValue) {
-    case AbstractSerial::StopBits1:
+    case SerialPort::OneStop:
         m_PossibleStopBits->setCurrentIndex(0);
         break;
-    case AbstractSerial::StopBits1_5:
+    case SerialPort::OneAndHalfStop:
         m_PossibleStopBits->setCurrentIndex(1);
         break;
-    case AbstractSerial::StopBits2:
+    case SerialPort::TwoStop:
         m_PossibleStopBits->setCurrentIndex(2);
         break;
     }
@@ -408,21 +414,21 @@ void LineDeviceConfig::InitFlowBox(void)
         return;
 
     m_PossibleFlow = new QComboBox;
-    m_PossibleFlow->insertItem(0, "Off", AbstractSerial::FlowControlOff);
-    m_PossibleFlow->insertItem(1, "Hardware", AbstractSerial::FlowControlHardware);
-    m_PossibleFlow->insertItem(2, "FlowControlXonXoff", AbstractSerial::FlowControlXonXoff);
+    m_PossibleFlow->insertItem(0, "Off", SerialPort::NoFlowControl);
+    m_PossibleFlow->insertItem(1, "Hardware", SerialPort::HardwareControl);
+    m_PossibleFlow->insertItem(2, "FlowControlXonXoff", SerialPort::SoftwareControl);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("Flow", AbstractSerial::FlowControlOff).toInt();
+    int configValue = settings.value("Flow", SerialPort::NoFlowControl).toInt();
     switch(configValue) {
-    case AbstractSerial::FlowControlOff:
+    case SerialPort::NoFlowControl:
         m_PossibleStopBits->setCurrentIndex(0);
         break;
-    case AbstractSerial::FlowControlHardware:
+    case SerialPort::HardwareControl:
         m_PossibleStopBits->setCurrentIndex(1);
         break;
-    case AbstractSerial::FlowControlXonXoff:
+    case SerialPort::SoftwareControl:
         m_PossibleStopBits->setCurrentIndex(2);
         break;
     }

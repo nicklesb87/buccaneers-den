@@ -25,7 +25,6 @@
 
 class QComboBox;
 class QStackedWidget;
-class SerialDeviceEnumerator;
 class GadgetGui;
 
 class MainWindow : public QMainWindow
@@ -41,14 +40,11 @@ public slots:
     void ConnectDevice();
     void DisconnectDevice();
 
-private slots:
-    void NewSerialPort(const QStringList &devicesList);
-
 private:
     void CreateActions();
     void CreateToolBar();
     void CreateGadget();
-    void CreateAvailableSerialPort();
+    void UpdateAvailableSerialPort();
 
     QToolBar *m_ToolBar;
     QAction *m_ConfigureAction;
@@ -57,7 +53,6 @@ private:
     QComboBox *m_DeviceType;
     QComboBox *m_SerialPort;
     QStackedWidget *m_StackedWidget;
-    SerialDeviceEnumerator *m_SerialEnumerator;
     GadgetGui *m_GadgetGui;
 };
 
