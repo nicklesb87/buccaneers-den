@@ -19,7 +19,7 @@
  *
  *****************************************************************************/
 #include "buspirateconfig.h"
-#include <abstractserial.h>
+#include <serialport.h>
 #include <QtGui>
 
 BusPirateConfig::BusPirateConfig(QWidget *parent) :
@@ -89,60 +89,64 @@ void BusPirateConfig::InitBaudsBox()
         return;
 
     m_PossibleBauds = new QComboBox;
-    m_PossibleBauds->insertItem(0, "921600", AbstractSerial::BaudRate921600);
-    m_PossibleBauds->insertItem(1, "460800", AbstractSerial::BaudRate460800);
-    m_PossibleBauds->insertItem(2, "230400", AbstractSerial::BaudRate230400);
-    m_PossibleBauds->insertItem(3, "115200", AbstractSerial::BaudRate115200);
-    m_PossibleBauds->insertItem(4, "57600", AbstractSerial::BaudRate57600);
-    m_PossibleBauds->insertItem(5, "38400", AbstractSerial::BaudRate38400);
-    m_PossibleBauds->insertItem(6, "19200", AbstractSerial::BaudRate19200);
-    m_PossibleBauds->insertItem(7, "9600", AbstractSerial::BaudRate9600);
-    m_PossibleBauds->insertItem(8, "4800", AbstractSerial::BaudRate4800);
-    m_PossibleBauds->insertItem(9, "2400", AbstractSerial::BaudRate2400);
-    m_PossibleBauds->insertItem(10, "1200", AbstractSerial::BaudRate1200);
-    m_PossibleBauds->insertItem(11, "300", AbstractSerial::BaudRate300);
+//    m_PossibleBauds->insertItem(0, "921600", SerialPort::Rate921600);
+//    m_PossibleBauds->insertItem(1, "460800", SerialPort::Rate460800);
+//    m_PossibleBauds->insertItem(2, "230400", SerialPort::Rate230400);
+    m_PossibleBauds->insertItem(3, "115200", SerialPort::Rate115200);
+    m_PossibleBauds->insertItem(4, "57600", SerialPort::Rate57600);
+    m_PossibleBauds->insertItem(5, "38400", SerialPort::Rate38400);
+    m_PossibleBauds->insertItem(6, "19200", SerialPort::Rate19200);
+    m_PossibleBauds->insertItem(7, "9600", SerialPort::Rate9600);
+    m_PossibleBauds->insertItem(8, "4800", SerialPort::Rate4800);
+    m_PossibleBauds->insertItem(9, "2400", SerialPort::Rate2400);
+    m_PossibleBauds->insertItem(10, "1200", SerialPort::Rate1200);
+//    m_PossibleBauds->insertItem(11, "300", SerialPort::Rate300);
     m_PossibleBauds->setCurrentIndex(3);
 
     QSettings settings;
     settings.beginGroup("BusPirate");
-    int configValue = settings.value("BaudRate", AbstractSerial::BaudRate115200).toInt();
+    int configValue = settings.value("BaudRate", SerialPort::Rate115200).toInt();
     switch(configValue) {
-    case AbstractSerial::BaudRate921600:
+#if 0
+    case SerialPort::Rate921600:
         m_PossibleBauds->setCurrentIndex(0);
         break;
-    case AbstractSerial::BaudRate460800:
+    case SerialPort::Rate460800:
         m_PossibleBauds->setCurrentIndex(1);
         break;
-    case AbstractSerial::BaudRate230400:
+    case SerialPort::Rate230400:
         m_PossibleBauds->setCurrentIndex(2);
         break;
-    case AbstractSerial::BaudRate115200:
+#endif
+    case SerialPort::Rate115200:
         m_PossibleBauds->setCurrentIndex(3);
         break;
-    case AbstractSerial::BaudRate57600:
+    case SerialPort::Rate57600:
         m_PossibleBauds->setCurrentIndex(4);
         break;
-    case AbstractSerial::BaudRate38400:
+    case SerialPort::Rate38400:
         m_PossibleBauds->setCurrentIndex(5);
         break;
-    case AbstractSerial::BaudRate19200:
+    case SerialPort::Rate19200:
         m_PossibleBauds->setCurrentIndex(6);
         break;
-    case AbstractSerial::BaudRate9600:
+    case SerialPort::Rate9600:
         m_PossibleBauds->setCurrentIndex(7);
         break;
-    case AbstractSerial::BaudRate4800:
+    case SerialPort::Rate4800:
         m_PossibleBauds->setCurrentIndex(8);
         break;
-    case AbstractSerial::BaudRate2400:
+    case SerialPort::Rate2400:
         m_PossibleBauds->setCurrentIndex(9);
         break;
-    case AbstractSerial::BaudRate1200:
+    case SerialPort::Rate1200:
         m_PossibleBauds->setCurrentIndex(10);
         break;
-    case AbstractSerial::BaudRate300:
+#if 0
+    case SerialPort::Rate300:
         m_PossibleBauds->setCurrentIndex(11);
         break;
+#endif
     }
     connect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
 }

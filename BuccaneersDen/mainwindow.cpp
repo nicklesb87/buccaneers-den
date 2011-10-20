@@ -21,7 +21,7 @@
 #include "mainwindow.h"
 #include "BusPirate/buspirategui.h"
 #include "line/linedevicegui.h"
-#include <serialdeviceenumerator.h>
+#include <serialportinfo.h>
 #include <QtGui>
 #include <typeinfo>
 
@@ -45,9 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_SerialPort = new QComboBox;
     m_SerialPort->setEditable(true);
-    m_SerialEnumerator = new SerialDeviceEnumerator(this);
-    CreateAvailableSerialPort();
-    connect(m_SerialEnumerator, SIGNAL(hasChanged(QStringList)), this, SLOT(NewSerialPort(QStringList)));
+    UpdateAvailableSerialPort();
 
     CreateActions();
     CreateToolBar();
@@ -60,24 +58,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::NewSerialPort(const QStringList &devicesList)
-{
-    m_SerialEnumerator->setEnabled(false);
-    m_SerialPort->clear();
-    QStringList::const_iterator constIterator;
-    int Total = 0;
-    for (constIterator = devicesList.constBegin(); constIterator != devicesList.constEnd(); ++constIterator)
-        m_SerialPort->insertItem(Total++, *constIterator);
-
-    QSettings settings;
-    if (settings.contains("SerialPort")) {
-        QString defaultPort = settings.value("SerialPort").toString();
-        int index = m_SerialPort->findText(defaultPort);
-        if (index != -1)
-            m_SerialPort->setCurrentIndex(index);
-    }
 }
 
 void MainWindow::CreateActions()
@@ -111,7 +91,6 @@ void MainWindow::PopConfigurationDialog()
 
 void MainWindow::ConnectDevice()
 {
-    m_SerialEnumerator->setEnabled(false);
     CreateGadget();
 
     if (!m_GadgetGui->ConnectDevice(m_SerialPort->currentText()))
@@ -156,7 +135,7 @@ void MainWindow::DisconnectDevice()
     m_DisconnectAction->setEnabled(false);
     m_DisconnectAction->setVisible(false);
 
-    CreateAvailableSerialPort();
+    UpdateAvailableSerialPort();
 }
 
 void MainWindow::CreateGadget()
@@ -181,15 +160,12 @@ void MainWindow::CreateGadget()
     }
 }
 
-void MainWindow::CreateAvailableSerialPort()
+void MainWindow::UpdateAvailableSerialPort()
 {
-    m_SerialEnumerator->setEnabled(true);
     m_SerialPort->clear();
-    QStringList devicesList = m_SerialEnumerator->devicesAvailable();
-    QStringList::const_iterator constIterator;
-    int Total = 0;
-    for (constIterator = devicesList.constBegin(); constIterator != devicesList.constEnd(); ++constIterator)
-        m_SerialPort->insertItem(Total++, *constIterator);
+    foreach (SerialPortInfo info, SerialPortInfo::availablePorts()) {
+        m_SerialPort->addItem(info.portName());
+    }
 
     QSettings settings;
     if (settings.contains("SerialPort")) {

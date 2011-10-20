@@ -1,9 +1,7 @@
 TARGET = BuccaneersDen
 TEMPLATE = app
-INCLUDEPATH += ../qserialdevice/src/qserialdevice
-INCLUDEPATH += ../qserialdevice/src/qserialdeviceenumerator
-CONFIG(debug, debug|release):LIBS += ../qserialdevice/src/build/debug/libqserialdeviced.a
-else:LIBS += ../qserialdevice/src/build/release/libqserialdevice.a
+INCLUDEPATH += ../qserialdevice/include
+LIBS += ../qserialdevice/src/libSerialPort.a
 unix:LIBS += -ludev
 win32:LIBS += -lsetupapi -luuid -ladvapi32
 SOURCES += main.cpp \

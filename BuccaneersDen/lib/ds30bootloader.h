@@ -23,7 +23,7 @@
 
 #include <QtCore>
 
-class AbstractSerial;
+class SerialPort;
 class Pic24MemoryImage;
 
 class DS30Command : public QByteArray
@@ -53,7 +53,7 @@ class DS30BootLoader : public QObject
 Q_OBJECT
 
 public:
-    DS30BootLoader(AbstractSerial *SerialPort, QObject *parent = 0);
+    DS30BootLoader(SerialPort *SerialPort, QObject *parent = 0);
     bool SendFirmware(const Pic24MemoryImage *PicDetails);
     QString GetErrorTitle();
     QString GetErrorMessage();
@@ -65,7 +65,7 @@ signals:
 private:
     bool IsDeviceReady();
     int SendCommand(const DS30Command &Command);
-    AbstractSerial *m_SerialPort;
+    SerialPort *m_SerialPort;
     QString m_ErrorTitle;
     QString m_ErrorMessage;
 
