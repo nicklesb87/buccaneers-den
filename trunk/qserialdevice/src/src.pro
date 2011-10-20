@@ -4,6 +4,12 @@ CONFIG += staticlib
 QT -= gui
 TARGET = SerialPort
 
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}
+
 win32 {
     DEFINES += SERIALPORT_BUILD SERIALPORT_SHARED
 }
