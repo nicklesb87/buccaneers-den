@@ -133,7 +133,11 @@ void ConsolePage::SetupLog()
     m_LogFileName = QDir::homePath();
     m_LogFileName += "/.buccaneers/BusPirate/Logs/";
     m_LogFileName += "BDen_Console-";
+#if defined(Q_WS_WIN)
+    m_LogFileName += now.toString(Qt::ISODate).replace(":", "-");
+#else
     m_LogFileName += now.toString(Qt::ISODate);
+#endif
     m_LogFileName += ".log";
 
     m_ConsoleLog = new QTextDocument;
