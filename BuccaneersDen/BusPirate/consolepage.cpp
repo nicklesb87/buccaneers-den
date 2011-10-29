@@ -256,8 +256,9 @@ void ConsolePage::ReceiveData(QByteArray Data)
         } else {
             newText = PrepareBinaryOutputForDisplay(Data);
         }
-        if (m_LastReceivedData.length() > 10)
-            m_LastReceivedData = m_LastReceivedData.mid(m_LastReceivedData.length()-11);
+        if (m_LastReceivedData.length() > 11)
+            m_LastReceivedData = m_LastReceivedData.mid(m_LastReceivedData.length()-12);
+        m_LastReceivedData.replace('\0', '\n');
     } else {
         newText = PrepareTextOutputForDisplay(Data);
     }
