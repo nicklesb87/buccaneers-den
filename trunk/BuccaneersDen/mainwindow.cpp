@@ -58,6 +58,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if (m_GadgetGui) {
+        QSettings settings;
+        settings.setValue("MainGeometry", saveGeometry());
+        settings.setValue("MainState", saveState());
+        m_GadgetGui->DisconnectDevice();
+    }
 }
 
 void MainWindow::CreateActions()
