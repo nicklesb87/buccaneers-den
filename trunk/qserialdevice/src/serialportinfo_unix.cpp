@@ -164,10 +164,11 @@ QList<qint32> SerialPortInfo::standardRates() const
     if (descriptor != -1) {
 
         struct serial_struct ser_info;
+
+        // This call with may TIOCGSERIAL be not supported on some
+        // USB/Serial converters (for example, PL2303).
         int result = ::ioctl(descriptor, TIOCGSERIAL, &ser_info);
-
         ::close(descriptor);
-
         if ((result != -1) && (ser_info.baud_base > 0)) {
 
             for (int i = 1, max = ser_info.baud_base / 50; i <= max; ++i) {
@@ -184,6 +185,7 @@ QList<qint32> SerialPortInfo::standardRates() const
     for (const qint32 *i = standardRates_begin; i != standardRates_end; ++i)
         rates.append(*i);
 #endif
+    qSort(rates);
     return rates;
 }
 
