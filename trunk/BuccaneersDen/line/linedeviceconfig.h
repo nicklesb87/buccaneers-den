@@ -31,6 +31,7 @@ class LineDeviceConfig : public QDialog
 Q_OBJECT
 public:
     explicit LineDeviceConfig(QWidget *parent = 0);
+    void SetCurrentDevice(const QString &DeviceName);
 
 signals:
     void ConfigChanged(void);
@@ -48,7 +49,7 @@ private slots:
     void ChooseBackgroundColor();
 
 private:
-    void InitBaudsBox();
+    void InitBaudsBox(const QString &DeviceName);
     void InitDataBitsBox();
     void InitParityBox();
     void InitStopBitsBox();
@@ -63,6 +64,7 @@ private:
     QComboBox *m_PossibleParity;
     QComboBox *m_PossibleStopBits;
     QComboBox *m_PossibleFlow;
+    QString m_CurrentDeviceName;
 };
 
 #endif // LINEDEVICECONFIG_H

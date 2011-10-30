@@ -31,6 +31,7 @@ class BusPirateConfig : public QDialog
     Q_OBJECT
 public:
     explicit BusPirateConfig(QWidget *parent = 0);
+    void SetCurrentDevice(const QString &DeviceName);
 
 signals:
     void ConfigChanged(void);
@@ -44,12 +45,13 @@ private slots:
     void ChooseBackgroundColor(void);
 
 private:
-    void InitBaudsBox();
+    void InitBaudsBox(const QString &DeviceName);
     QLineEdit *m_TextExample;
     QPushButton *m_ChangeFont;
     QPushButton *m_ChangeForeground;
     QPushButton *m_ChangeBackground;
     QComboBox *m_PossibleBauds;
+    QString m_CurrentDeviceName;
 };
 
 #endif // BUSPIRATECONFIG_H

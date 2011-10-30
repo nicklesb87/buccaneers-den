@@ -32,7 +32,7 @@ public:
     {};
     virtual ~GadgetGui() {};
 
-    virtual void DisplayConfig() = 0;
+    virtual void DisplayConfig(const QString &DeviceName) = 0;
     virtual bool ConnectDevice(const QString &DeviceName) = 0;
     virtual void DisconnectDevice() = 0;
     virtual bool IsConnected() = 0;
