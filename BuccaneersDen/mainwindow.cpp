@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (m_GadgetGui) {
+    if (m_GadgetGui && m_GadgetGui->IsConnected()) {
         QSettings settings;
         settings.setValue("MainGeometry", saveGeometry());
         settings.setValue("MainState", saveState());
