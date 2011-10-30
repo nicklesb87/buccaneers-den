@@ -68,12 +68,13 @@ BusPirateGui::~BusPirateGui()
     disconnect(m_ConsolePage, SLOT(ReceiveData(QByteArray)));
 }
 
-void BusPirateGui::DisplayConfig()
+void BusPirateGui::DisplayConfig(const QString &DeviceName)
 {
     if (!m_BPConfigDlg) {
         m_BPConfigDlg = new BusPirateConfig(this);
         connect(m_BPConfigDlg, SIGNAL(ConfigChanged(void)), this, SLOT(UpdateConfig(void)));
     }
+    m_BPConfigDlg->SetCurrentDevice(DeviceName);
     m_BPConfigDlg->show();
     m_BPConfigDlg->raise();
     m_BPConfigDlg->activateWindow();

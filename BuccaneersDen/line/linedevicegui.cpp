@@ -110,12 +110,13 @@ void LineDeviceGui::SetupLog(void)
     m_ConsoleLog->setDocumentLayout(plainLayout);
 }
 
-void LineDeviceGui::DisplayConfig()
+void LineDeviceGui::DisplayConfig(const QString &DeviceName)
 {
     if (!m_LDConfigDlg) {
         m_LDConfigDlg = new LineDeviceConfig(this);
         connect(m_LDConfigDlg, SIGNAL(ConfigChanged(void)), this, SLOT(UpdateConfig(void)));
     }
+    m_LDConfigDlg->SetCurrentDevice(DeviceName);
     m_LDConfigDlg->show();
     m_LDConfigDlg->raise();
     m_LDConfigDlg->activateWindow();

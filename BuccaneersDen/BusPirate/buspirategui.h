@@ -40,7 +40,7 @@ public:
     explicit BusPirateGui(QWidget *parent = 0);
     virtual ~BusPirateGui();
 
-    void DisplayConfig();
+    void DisplayConfig(const QString &DeviceName);
     bool ConnectDevice(const QString &DeviceName);
     void DisconnectDevice();
     bool IsConnected();

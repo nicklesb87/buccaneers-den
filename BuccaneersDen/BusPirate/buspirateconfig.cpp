@@ -20,6 +20,7 @@
  *****************************************************************************/
 #include "buspirateconfig.h"
 #include <serialport.h>
+#include <serialportinfo.h>
 #include <QtGui>
 
 BusPirateConfig::BusPirateConfig(QWidget *parent) :
@@ -73,7 +74,8 @@ BusPirateConfig::BusPirateConfig(QWidget *parent) :
     QHBoxLayout *speedLayout = new QHBoxLayout;
     QLabel *baudLabel = new QLabel(tr("Baud Rate"));
     speedLayout->addWidget(baudLabel);
-    InitBaudsBox();
+    m_PossibleBauds = new QComboBox;
+    connect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
     speedLayout->addWidget(m_PossibleBauds);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -83,80 +85,48 @@ BusPirateConfig::BusPirateConfig(QWidget *parent) :
     setLayout(mainLayout);
 }
 
-void BusPirateConfig::InitBaudsBox()
+void BusPirateConfig::InitBaudsBox(const QString &DeviceName)
 {
-    if (m_PossibleBauds)
+    if (DeviceName == m_CurrentDeviceName)
         return;
 
-    m_PossibleBauds = new QComboBox;
-//    m_PossibleBauds->insertItem(0, "921600", SerialPort::Rate921600);
-//    m_PossibleBauds->insertItem(1, "460800", SerialPort::Rate460800);
-//    m_PossibleBauds->insertItem(2, "230400", SerialPort::Rate230400);
-    m_PossibleBauds->insertItem(3, "115200", SerialPort::Rate115200);
-    m_PossibleBauds->insertItem(4, "57600", SerialPort::Rate57600);
-    m_PossibleBauds->insertItem(5, "38400", SerialPort::Rate38400);
-    m_PossibleBauds->insertItem(6, "19200", SerialPort::Rate19200);
-    m_PossibleBauds->insertItem(7, "9600", SerialPort::Rate9600);
-    m_PossibleBauds->insertItem(8, "4800", SerialPort::Rate4800);
-    m_PossibleBauds->insertItem(9, "2400", SerialPort::Rate2400);
-    m_PossibleBauds->insertItem(10, "1200", SerialPort::Rate1200);
-//    m_PossibleBauds->insertItem(11, "300", SerialPort::Rate300);
-    m_PossibleBauds->setCurrentIndex(3);
+    m_CurrentDeviceName = DeviceName;
+
+    disconnect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
+    m_PossibleBauds->addItem("921600");
+    m_PossibleBauds->addItem("460800");
+    m_PossibleBauds->addItem("230400");
+    m_PossibleBauds->addItem("115200");
+    m_PossibleBauds->addItem("57600");
+    m_PossibleBauds->addItem("38400");
+    m_PossibleBauds->addItem("19200");
+    m_PossibleBauds->addItem("9600");
+    m_PossibleBauds->addItem("4800");
+    m_PossibleBauds->addItem("2400");
+    m_PossibleBauds->addItem("1200");
+    m_PossibleBauds->addItem("300");
 
     QSettings settings;
     settings.beginGroup("BusPirate");
-    int configValue = settings.value("BaudRate", SerialPort::Rate115200).toInt();
-    switch(configValue) {
-#if 0
-    case SerialPort::Rate921600:
-        m_PossibleBauds->setCurrentIndex(0);
-        break;
-    case SerialPort::Rate460800:
-        m_PossibleBauds->setCurrentIndex(1);
-        break;
-    case SerialPort::Rate230400:
-        m_PossibleBauds->setCurrentIndex(2);
-        break;
-#endif
-    case SerialPort::Rate115200:
-        m_PossibleBauds->setCurrentIndex(3);
-        break;
-    case SerialPort::Rate57600:
-        m_PossibleBauds->setCurrentIndex(4);
-        break;
-    case SerialPort::Rate38400:
-        m_PossibleBauds->setCurrentIndex(5);
-        break;
-    case SerialPort::Rate19200:
-        m_PossibleBauds->setCurrentIndex(6);
-        break;
-    case SerialPort::Rate9600:
-        m_PossibleBauds->setCurrentIndex(7);
-        break;
-    case SerialPort::Rate4800:
-        m_PossibleBauds->setCurrentIndex(8);
-        break;
-    case SerialPort::Rate2400:
-        m_PossibleBauds->setCurrentIndex(9);
-        break;
-    case SerialPort::Rate1200:
-        m_PossibleBauds->setCurrentIndex(10);
-        break;
-#if 0
-    case SerialPort::Rate300:
-        m_PossibleBauds->setCurrentIndex(11);
-        break;
-#endif
-    }
+    int configValue = settings.value("BaudRate", 115200).toInt();
+    int index = m_PossibleBauds->findText(QString::number(configValue));
+    if (index != -1)
+        m_PossibleBauds->setCurrentIndex(index);
+
     connect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
 }
 
 void BusPirateConfig::BaudsChanged(int index)
 {
-    int selectedBauds = m_PossibleBauds->itemData(index).toInt();
-    QSettings settings;
-    settings.beginGroup("BusPirate");
-    settings.setValue("BaudRate", selectedBauds);
+    Q_UNUSED(index);
+
+    bool ok = false;
+    int selectedBauds = m_PossibleBauds->currentText().toInt(&ok);
+    if (ok) {
+        QSettings settings;
+        settings.beginGroup("BusPirate");
+        settings.setValue("BaudRate", selectedBauds);
+    }
 }
 
 void BusPirateConfig::ChooseFont()
@@ -197,4 +167,9 @@ void BusPirateConfig::ChooseBackgroundColor()
         settings.setValue("IO Color", palette);
         emit ConfigChanged();
     }
+}
+
+void BusPirateConfig::SetCurrentDevice(const QString &DeviceName)
+{
+    InitBaudsBox(DeviceName);
 }

@@ -92,7 +92,7 @@ void MainWindow::CreateToolBar()
 void MainWindow::PopConfigurationDialog()
 {
     CreateGadget();
-    m_GadgetGui->DisplayConfig();
+    m_GadgetGui->DisplayConfig(m_SerialPort->currentText());
 }
 
 void MainWindow::ConnectDevice()
