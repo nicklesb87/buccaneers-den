@@ -10,7 +10,7 @@
 #if QT_VERSION >= 0x040700
 #  include <QtCore/qelapsedtimer.h>
 #else
-#  include <QtCore/qtime.h>
+#  include <QtCore/qdatetime.h>
 #endif
 
 QT_USE_NAMESPACE
@@ -39,6 +39,7 @@ SerialPortPrivate::SerialPortPrivate(SerialPort *parent)
     , m_flow(SerialPort::UnknownFlowControl)
     , m_policy(SerialPort::IgnorePolicy)
     , m_portError(SerialPort::NoError)
+    , m_restoreSettingsOnClose(true)
 {
     m_engine = SerialPortEngine::create(this);
     Q_ASSERT(m_engine);
@@ -221,11 +222,10 @@ bool SerialPortPrivate::setBreak(bool set)
 
 bool SerialPortPrivate::setDataErrorPolicy(SerialPort::DataErrorPolicy policy)
 {
-    if (m_engine->setDataErrorPolicy(policy)) {
+    const bool ret = (policy == m_policy) || m_engine->setDataErrorPolicy(policy);
+    if (ret)
         m_policy = policy;
-        return true;
-    }
-    return false;
+    return ret;
 }
 
 SerialPort::DataErrorPolicy SerialPortPrivate::dataErrorPolicy() const
@@ -463,47 +463,59 @@ bool SerialPort::open(OpenMode mode)
 {
     Q_D(SerialPort);
 
+    if (isOpen()) {
+        d->setError(SerialPort::DeviceAlreadyOpenedError);
+        return false;
+    }
+
     // Define while not supported modes.
     static OpenMode unsupportedModes = (Append | Truncate | Text);
-
     if ((mode & unsupportedModes) || (mode == NotOpen)) {
         d->setError(SerialPort::UnsupportedPortOperationError);
         return false;
     }
 
-    if (!isOpen()) {
-        if (d->open(mode)) {
-            QIODevice::open(mode);
-            d->clearBuffers();
+    unsetError();
+    if (d->open(mode)) {
+        QIODevice::open(mode);
+        d->clearBuffers();
 
-            if (mode & ReadOnly)
-                d->m_engine->setReadNotificationEnabled(true);
-            if (mode & WriteOnly)
-                d->m_engine->setWriteNotificationEnabled(true);
+        if (mode & ReadOnly)
+            d->m_engine->setReadNotificationEnabled(true);
+        if (mode & WriteOnly)
+            d->m_engine->setWriteNotificationEnabled(true);
 
-            d->m_isBuffered = !(mode & Unbuffered);
-            return QIODevice::open(mode);
-        }
+        d->m_isBuffered = !(mode & Unbuffered);
+        return true;
     }
-    else
-        d->setError(SerialPort::DeviceAlreadyOpenedError);
-
-    close();
     return false;
 }
 
 void SerialPort::close()
 {
     Q_D(SerialPort);
-    if (isOpen()) {
-        d->m_engine->setReadNotificationEnabled(false);
-        d->m_engine->setWriteNotificationEnabled(false);
-        d->clearBuffers();
-        d->close();
-        QIODevice::close();
-    }
-    else
+    if (!isOpen()) {
         d->setError(SerialPort::DeviceIsNotOpenedError);
+        return;
+    }
+
+    QIODevice::close();
+    d->m_engine->setReadNotificationEnabled(false);
+    d->m_engine->setWriteNotificationEnabled(false);
+    d->clearBuffers();
+    d->close();
+}
+
+void SerialPort::setRestoreSettingsOnClose(bool restore)
+{
+    Q_D( SerialPort);
+    d->m_restoreSettingsOnClose = restore;
+}
+
+bool SerialPort::restoreSettingsOnClose() const
+{
+    Q_D(const SerialPort);
+    return d->m_restoreSettingsOnClose;
 }
 
 bool SerialPort::setRate(qint32 rate, Directions dir)
@@ -629,17 +641,23 @@ bool SerialPort::isSequential() const
 qint64 SerialPort::bytesAvailable() const
 {
     Q_D(const SerialPort);
+    qint64 ret;
     if (d->m_isBuffered)
-        return qint64(d->m_readBuffer.size());
-    return d->bytesAvailable();
+        ret = qint64(d->m_readBuffer.size());
+    else
+        ret = d->bytesAvailable();
+    return ret + QIODevice::bytesAvailable();
 }
 
 qint64 SerialPort::bytesToWrite() const
 {
     Q_D(const SerialPort);
+    qint64 ret;
     if (d->m_isBuffered)
-        return qint64(d->m_writeBuffer.size());
-    return d->bytesToWrite();
+        ret = qint64(d->m_writeBuffer.size());
+    else
+        ret = d->bytesToWrite();
+    return ret + QIODevice::bytesToWrite();
 }
 
 bool SerialPort::canReadLine() const

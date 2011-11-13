@@ -68,10 +68,6 @@ public:
 
 protected:
     virtual void detectDefaultSettings();
-    virtual bool saveOldsettings();
-    virtual bool restoreOldsettings();
-    virtual void prepareOtherOptions();
-
     virtual bool eventFilter(QObject *obj, QEvent *e);
 
 private:
@@ -83,8 +79,7 @@ private:
     QSocketNotifier *m_writeNotifier;
     QSocketNotifier *m_exceptionNotifier;
 
-    void prepareTimeouts(int msecs);
-    bool updateTermious();
+    bool updateTermios();
     bool setStandartRate(SerialPort::Directions dir, speed_t rate);
     bool setCustomRate(qint32 rate);
 
