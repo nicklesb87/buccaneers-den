@@ -18,7 +18,7 @@
 #  endif
 #endif
 
-#include <QtCore/qregexp.h>
+#include <QtCore/qdebug.h>
 #include <QtCore/qsocketnotifier.h>
 #include <QtCore/qcoreevent.h>
 
@@ -34,7 +34,6 @@ UnixSerialPortEngine::UnixSerialPortEngine(SerialPortPrivate *parent)
 {
     Q_ASSERT(parent);
     m_parent = parent;
-    m_oldSettingsIsSaved = false;
     int size = sizeof(struct termios);
     ::memset(&m_currTermios, 0, size);
     ::memset(&m_oldTermios, 0, size);
@@ -102,26 +101,31 @@ bool UnixSerialPortEngine::open(const QString &location, QIODevice::OpenMode mod
     ::ioctl(m_descriptor, TIOCEXCL);
 #endif
 
-    if (saveOldsettings()) {
-
-        prepareOtherOptions();
-        prepareTimeouts(0);
-
-        if (updateTermious()) {
-            // Disable autocalculate total read interval.
-            // isAutoCalcReadTimeoutConstant = false;
-
-            detectDefaultSettings();
-            return true;
-        }
+    // Save current port settings.
+    if (::tcgetattr(m_descriptor, &m_oldTermios) == -1) {
+        m_parent->setError(SerialPort::UnknownPortError);
+        return false;
     }
-    m_parent->setError(SerialPort::ConfiguringError);
-    return false;
+    ::memcpy(&m_currTermios, &m_oldTermios, sizeof(struct termios));
+
+    // Set other options.
+    ::cfmakeraw(&m_currTermios);
+    m_currTermios.c_cflag |= (CREAD | CLOCAL);
+    m_currTermios.c_cc[VTIME] = 0;
+
+    // Apply new init settings.
+    if (!updateTermios())
+        return false;
+
+    detectDefaultSettings();
+    return true;
 }
 
 void UnixSerialPortEngine::close(const QString &location)
 {
-    restoreOldsettings();
+    // Restore saved port settings.
+    if (m_parent->m_restoreSettingsOnClose)
+        ::tcsetattr(m_descriptor, TCSANOW, &m_oldTermios);
 
     // Try clean exclusive mode.
 #if defined (TIOCNXCL)
@@ -294,7 +298,7 @@ qint64 UnixSerialPortEngine::read(char *data, qint64 len)
 #if defined (CMSPAR)
     bytesRead = ::read(m_descriptor, data, len);
 #else
-    if ((m_parity != SerialPort::MarkParity) && (m_parity != SerialPort::SpaceParity))
+    if ((m_parent->m_parity != SerialPort::MarkParity) && (m_parent->m_parity != SerialPort::SpaceParity))
         bytesRead = ::read(m_descriptor, data, len);
     else // Perform parity emulation.
         bytesRead = readPerChar(data, len);
@@ -341,7 +345,7 @@ qint64 UnixSerialPortEngine::write(const char *data, qint64 len)
 #if defined (CMSPAR)
     bytesWritten = ::write(m_descriptor, data, len);
 #else
-    if ((m_parity != SerialPort::MarkParity) && (m_parity != SerialPort::SpaceParity))
+    if ((m_parent->m_parity != SerialPort::MarkParity) && (m_parent->m_parity != SerialPort::SpaceParity))
         bytesWritten = ::write(m_descriptor, data, len);
     else // Perform parity emulation.
         bytesWritten = writePerChar(data, len);
@@ -607,10 +611,7 @@ bool UnixSerialPortEngine::setDataBits(SerialPort::DataBits dataBits)
         m_parent->setError(SerialPort::UnsupportedPortOperationError);
         return false;
     }
-    bool ret = updateTermious();
-    if (!ret)
-        m_parent->setError(SerialPort::ConfiguringError);
-    return ret;
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::setParity(SerialPort::Parity parity)
@@ -652,10 +653,7 @@ bool UnixSerialPortEngine::setParity(SerialPort::Parity parity)
         break;
     }
 
-    bool ret = updateTermious();
-    if (!ret)
-        m_parent->setError(SerialPort::ConfiguringError);
-    return ret;
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::setStopBits(SerialPort::StopBits stopBits)
@@ -678,10 +676,7 @@ bool UnixSerialPortEngine::setStopBits(SerialPort::StopBits stopBits)
         m_parent->setError(SerialPort::UnsupportedPortOperationError);
         return false;
     }
-    bool ret = updateTermious();
-    if (!ret)
-        m_parent->setError(SerialPort::ConfiguringError);
-    return ret;
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::setFlowControl(SerialPort::FlowControl flow)
@@ -708,17 +703,38 @@ bool UnixSerialPortEngine::setFlowControl(SerialPort::FlowControl flow)
         m_parent->setError(SerialPort::UnsupportedPortOperationError);
         return false;
     }
-    bool ret = updateTermious();
-    if (!ret)
-        m_parent->setError(SerialPort::ConfiguringError);
-    return ret;
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::setDataErrorPolicy(SerialPort::DataErrorPolicy policy)
 {
-    Q_UNUSED(policy)
-    // Impl me
-    return false;
+    tcflag_t parmrkMask = PARMRK;
+#ifndef CMSPAR
+    //in space/mark parity emulation also used PARMRK flag
+    if (m_parent->m_parity == SerialPort::SpaceParity || m_parent->m_parity == SerialPort::MarkParity)
+        parmrkMask = 0;
+#endif //CMSPAR
+    switch(policy) {
+    case SerialPort::SkipPolicy:
+        m_currTermios.c_iflag &= ~parmrkMask;
+        m_currTermios.c_iflag |= IGNPAR | INPCK;
+        break;
+    case SerialPort::PassZeroPolicy:
+        m_currTermios.c_iflag &= ~(IGNPAR | parmrkMask);
+        m_currTermios.c_iflag |= INPCK;
+        break;
+    case SerialPort::IgnorePolicy:
+        m_currTermios.c_iflag &= ~INPCK;
+        break;
+    case SerialPort::StopReceivingPolicy:
+        m_currTermios.c_iflag &= ~IGNPAR;
+        m_currTermios.c_iflag |= (parmrkMask | INPCK);
+        break;
+    default:
+        m_parent->setError(SerialPort::UnsupportedPortOperationError);
+        return false;
+    }
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::isReadNotificationEnabled() const
@@ -991,36 +1007,18 @@ void UnixSerialPortEngine::detectDefaultSettings()
         m_parent->m_flow = SerialPort::HardwareControl;
     else
         m_parent->m_flow = SerialPort::UnknownFlowControl;
-}
 
-// Used only in method UnixSerialPortEngine::open().
-bool UnixSerialPortEngine::saveOldsettings()
-{
-    if (::tcgetattr(m_descriptor, &m_oldTermios) == -1)
-        return false;
-
-    ::memcpy(&m_currTermios, &m_oldTermios, sizeof(struct termios));
-    m_oldSettingsIsSaved = true;
-    return true;
-}
-
-// Used only in method UnixSerialPortEngine::close().
-bool UnixSerialPortEngine::restoreOldsettings()
-{
-    bool restoreResult = true;
-    if (m_oldSettingsIsSaved) {
-        m_oldSettingsIsSaved = false;
-        restoreResult = (::tcsetattr(m_descriptor, TCSANOW, &m_oldTermios) != -1);
+    //detect error policy
+    if (m_currTermios.c_iflag & INPCK) {
+        if (m_currTermios.c_iflag & IGNPAR)
+            m_parent->m_policy = SerialPort::SkipPolicy;
+        else if (m_currTermios.c_iflag & PARMRK)
+            m_parent->m_policy = SerialPort::StopReceivingPolicy;
+        else
+            m_parent->m_policy = SerialPort::PassZeroPolicy;
+    } else {
+        m_parent->m_policy = SerialPort::IgnorePolicy;
     }
-    return restoreResult;
-}
-
-// Prepares other parameters of the structures port configuration.
-// Used only in method UnixSerialPortEngine::open().
-void UnixSerialPortEngine::prepareOtherOptions()
-{
-    ::cfmakeraw(&m_currTermios);
-    m_currTermios.c_cflag |= (CREAD | CLOCAL);
 }
 
 bool UnixSerialPortEngine::eventFilter(QObject *obj, QEvent *e)
@@ -1044,14 +1042,13 @@ bool UnixSerialPortEngine::eventFilter(QObject *obj, QEvent *e)
 
 /* Private methods */
 
-void UnixSerialPortEngine::prepareTimeouts(int msecs)
+bool UnixSerialPortEngine::updateTermios()
 {
-    m_currTermios.c_cc[VTIME] = (msecs > 0) ? (msecs / 100) : 0;
-}
-
-inline bool UnixSerialPortEngine::updateTermious()
-{
-    return (::tcsetattr(m_descriptor, TCSANOW, &m_currTermios) != -1);
+    if (::tcsetattr(m_descriptor, TCSANOW, &m_currTermios) == -1) {
+        m_parent->setError(SerialPort::ConfiguringError);
+        return false;
+    }
+    return true;
 }
 
 bool UnixSerialPortEngine::setStandartRate(SerialPort::Directions dir, speed_t rate)
@@ -1060,7 +1057,7 @@ bool UnixSerialPortEngine::setStandartRate(SerialPort::Directions dir, speed_t r
             || ((dir & SerialPort::Output) && (::cfsetospeed(&m_currTermios, rate) == -1))) {
         return false;
     }
-    return updateTermious();
+    return updateTermios();
 }
 
 bool UnixSerialPortEngine::setCustomRate(qint32 rate)
@@ -1119,17 +1116,19 @@ static inline bool evenParity(quint8 c)
 qint64 UnixSerialPortEngine::writePerChar(const char *data, qint64 maxSize)
 {
     qint64 ret = 0;
-    quint8 const charMask = (0xFF >> (8 - m_dataBits));
+    quint8 const charMask = (0xFF >> (8 - m_parent->m_dataBits));
 
     while (ret < maxSize) {
 
         bool par = evenParity(*data & charMask);
         // False if need EVEN, true if need ODD.
-        par ^= (m_parity == SerialPort::MarkParity);
+        par ^= (m_parent->m_parity == SerialPort::MarkParity);
         if (par ^ bool(m_currTermios.c_cflag & PARODD)) { // Need switch parity mode?
             m_currTermios.c_cflag ^= PARODD;
-            Flush(); //??
-            updateTermious();
+            flush(); //force sending already buffered data, because updateTermios() cleares buffers
+            //todo: add receiving buffered data!!!
+            if (!updateTermios())
+                break;
         }
 
         int r = ::write(m_descriptor, data, 1);
@@ -1146,7 +1145,7 @@ qint64 UnixSerialPortEngine::writePerChar(const char *data, qint64 maxSize)
 qint64 UnixSerialPortEngine::readPerChar(char *data, qint64 maxSize)
 {
     qint64 ret = 0;
-    //quint8 const charMask = (0xFF >> (8 - m_dataBits));
+    quint8 const charMask = (0xFF >> (8 - m_parent->m_dataBits));
 
     // 0 - prefix not started,
     // 1 - received 0xFF,
@@ -1184,9 +1183,24 @@ qint64 UnixSerialPortEngine::readPerChar(char *data, qint64 maxSize)
             break;
         }
         // Now: par contains parity ok or error, *data contains received character
-        // par ^= evenParity(*data & charMask); //par contains parity bit value for EVEN mode
-        // par ^= bool(tio.c_cflag & PARODD); //par contains parity bit value for current mode
-        // bool parity_error = (par ^ bool(parity == AbstractSerial::ParitySpace));
+        par ^= evenParity(*data & charMask); //par contains parity bit value for EVEN mode
+        par ^= bool(m_currTermios.c_cflag & PARODD); //par contains parity bit value for current mode
+        if (par ^ bool(m_parent->m_parity == SerialPort::SpaceParity)) { //if parity error
+            switch(m_parent->m_policy) {
+            case SerialPort::SkipPolicy:
+                continue;       //ignore received character
+            case SerialPort::StopReceivingPolicy:
+                return ++ret;   //abort receiving
+                break;
+            case SerialPort::UnknownPolicy:
+                qWarning() << "Unknown error policy is used! Falling back to PassZeroPolicy";
+            case SerialPort::PassZeroPolicy:
+                *data = '\0';   //replace received character by zero
+                break;
+            case SerialPort::IgnorePolicy:
+                break;          //ignore error and pass received character
+            }
+        }
         ++data;
         ++ret;
     }
