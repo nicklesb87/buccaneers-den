@@ -19,12 +19,12 @@
  *
  *****************************************************************************/
 #include "ds30bootloader.h"
-#include <serialport.h>
+#include <QtSerialPort/QtSerialPort>
 #include "picmemoryimage.h"
 
 //#define COMPARE_WITH_PIRATE_LOADER
 
-DS30BootLoader::DS30BootLoader(SerialPort *SerialPort, QObject *parent) :
+DS30BootLoader::DS30BootLoader(QSerialPort *SerialPort, QObject *parent) :
     QObject(parent)
 {
     m_SerialPort = SerialPort;

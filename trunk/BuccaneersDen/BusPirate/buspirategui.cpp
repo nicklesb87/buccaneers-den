@@ -24,6 +24,10 @@
 #include "consolepage.h"
 #include "firmwarepage.h"
 #include <QtGui>
+#include <QTabBar>
+#include <QStackedLayout>
+#include <QVBoxLayout>
+#include <QMessageBox>
 
 BusPirateGui::BusPirateGui(QWidget *parent) :
     GadgetGui(parent),

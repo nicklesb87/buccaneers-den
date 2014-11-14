@@ -23,7 +23,7 @@
 
 #include <QObject>
 
-class SerialPort;
+class QSerialPort;
 class Pic24MemoryImage;
 
 class BusPirateDevice : public QObject
@@ -71,7 +71,7 @@ private:
     void ReadBootloaderVersion(const QString &line);
     Pic24MemoryImage *GetPicVersion();
 
-    SerialPort *m_SerialPort;
+    QSerialPort *m_SerialPort;
     volatile bool m_ForwardData;
     bool m_Connected;
     QString m_BusPirateVersion;

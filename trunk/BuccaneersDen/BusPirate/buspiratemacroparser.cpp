@@ -38,7 +38,7 @@ bool BusPirateMacroParser::Parse(const QString &Macro, QByteArray &Result)
             (Result.at(Result.count()-1) != '\r'))
             Result.append('\n');
     } else {
-        Result = Macro.toAscii();
+        Result = Macro.toLatin1();
         if (Result.isEmpty() ||
             (Result.at(Result.count()-1) != '\n') ||
             (Result.at(Result.count()-1) != '\r'))
@@ -79,7 +79,7 @@ void BusPirateMacroParser::ParseBasicCommand(const QString &Macro, QByteArray &R
     QStringList::const_iterator constIterator;
     for (constIterator = lines.constBegin(); constIterator != lines.constEnd(); ++constIterator) {
         if ((remComment.indexIn(*constIterator) != -1) && (caretComment.indexIn(*constIterator) != -1))
-            Result += (*constIterator).toAscii();
+            Result += (*constIterator).toLatin1();
     }
 
 }

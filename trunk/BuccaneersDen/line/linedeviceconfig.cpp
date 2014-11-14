@@ -19,8 +19,15 @@
  *
  *****************************************************************************/
 #include "linedeviceconfig.h"
-#include <serialport.h>
+#include <QtSerialPort/QtSerialPort>
 #include <QtGui>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QFontDialog>
+#include <QColorDialog>
 
 LineDeviceConfig::LineDeviceConfig(QWidget *parent) :
     QDialog(parent),
@@ -253,25 +260,25 @@ void LineDeviceConfig::InitDataBitsBox(void)
         return;
 
     m_PossibleDataBits = new QComboBox;
-    m_PossibleDataBits->insertItem(0, "8", SerialPort::Data8);
-    m_PossibleDataBits->insertItem(1, "7", SerialPort::Data7);
-    m_PossibleDataBits->insertItem(2, "6", SerialPort::Data6);
-    m_PossibleDataBits->insertItem(3, "5", SerialPort::Data5);
+    m_PossibleDataBits->insertItem(0, "8", QSerialPort::Data8);
+    m_PossibleDataBits->insertItem(1, "7", QSerialPort::Data7);
+    m_PossibleDataBits->insertItem(2, "6", QSerialPort::Data6);
+    m_PossibleDataBits->insertItem(3, "5", QSerialPort::Data5);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("DataBits", SerialPort::Data8).toInt();
+    int configValue = settings.value("DataBits", QSerialPort::Data8).toInt();
     switch(configValue) {
-    case SerialPort::Data8:
+    case QSerialPort::Data8:
         m_PossibleDataBits->setCurrentIndex(0);
         break;
-    case SerialPort::Data7:
+    case QSerialPort::Data7:
         m_PossibleDataBits->setCurrentIndex(1);
         break;
-    case SerialPort::Data6:
+    case QSerialPort::Data6:
         m_PossibleDataBits->setCurrentIndex(2);
         break;
-    case SerialPort::Data5:
+    case QSerialPort::Data5:
         m_PossibleDataBits->setCurrentIndex(3);
         break;
     }
@@ -284,29 +291,29 @@ void LineDeviceConfig::InitParityBox(void)
         return;
 
     m_PossibleParity = new QComboBox;
-    m_PossibleParity->insertItem(0, "None", SerialPort::NoParity);
-    m_PossibleParity->insertItem(1, "Odd", SerialPort::OddParity);
-    m_PossibleParity->insertItem(2, "Even", SerialPort::EvenParity);
-    m_PossibleParity->insertItem(3, "Mark", SerialPort::MarkParity);
-    m_PossibleParity->insertItem(4, "Space", SerialPort::SpaceParity);
+    m_PossibleParity->insertItem(0, "None", QSerialPort::NoParity);
+    m_PossibleParity->insertItem(1, "Odd", QSerialPort::OddParity);
+    m_PossibleParity->insertItem(2, "Even", QSerialPort::EvenParity);
+    m_PossibleParity->insertItem(3, "Mark", QSerialPort::MarkParity);
+    m_PossibleParity->insertItem(4, "Space", QSerialPort::SpaceParity);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("Parity", SerialPort::NoParity).toInt();
+    int configValue = settings.value("Parity", QSerialPort::NoParity).toInt();
     switch(configValue) {
-    case SerialPort::NoParity:
+    case QSerialPort::NoParity:
         m_PossibleParity->setCurrentIndex(0);
         break;
-    case SerialPort::OddParity:
+    case QSerialPort::OddParity:
         m_PossibleParity->setCurrentIndex(1);
         break;
-    case SerialPort::EvenParity:
+    case QSerialPort::EvenParity:
         m_PossibleParity->setCurrentIndex(2);
         break;
-    case SerialPort::MarkParity:
+    case QSerialPort::MarkParity:
         m_PossibleParity->setCurrentIndex(3);
         break;
-    case SerialPort::SpaceParity:
+    case QSerialPort::SpaceParity:
         m_PossibleParity->setCurrentIndex(4);
         break;
     }
@@ -319,21 +326,21 @@ void LineDeviceConfig::InitStopBitsBox(void)
         return;
 
     m_PossibleStopBits = new QComboBox;
-    m_PossibleStopBits->insertItem(0, "One", SerialPort::OneStop);
-    m_PossibleStopBits->insertItem(1, "Half", SerialPort::OneAndHalfStop);
-    m_PossibleStopBits->insertItem(2, "Two", SerialPort::TwoStop);
+    m_PossibleStopBits->insertItem(0, "One", QSerialPort::OneStop);
+    m_PossibleStopBits->insertItem(1, "Half", QSerialPort::OneAndHalfStop);
+    m_PossibleStopBits->insertItem(2, "Two", QSerialPort::TwoStop);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("StopBits", SerialPort::OneStop).toInt();
+    int configValue = settings.value("StopBits", QSerialPort::OneStop).toInt();
     switch(configValue) {
-    case SerialPort::OneStop:
+    case QSerialPort::OneStop:
         m_PossibleStopBits->setCurrentIndex(0);
         break;
-    case SerialPort::OneAndHalfStop:
+    case QSerialPort::OneAndHalfStop:
         m_PossibleStopBits->setCurrentIndex(1);
         break;
-    case SerialPort::TwoStop:
+    case QSerialPort::TwoStop:
         m_PossibleStopBits->setCurrentIndex(2);
         break;
     }
@@ -346,21 +353,21 @@ void LineDeviceConfig::InitFlowBox(void)
         return;
 
     m_PossibleFlow = new QComboBox;
-    m_PossibleFlow->insertItem(0, "Off", SerialPort::NoFlowControl);
-    m_PossibleFlow->insertItem(1, "Hardware", SerialPort::HardwareControl);
-    m_PossibleFlow->insertItem(2, "FlowControlXonXoff", SerialPort::SoftwareControl);
+    m_PossibleFlow->insertItem(0, "Off", QSerialPort::NoFlowControl);
+    m_PossibleFlow->insertItem(1, "Hardware", QSerialPort::HardwareControl);
+    m_PossibleFlow->insertItem(2, "FlowControlXonXoff", QSerialPort::SoftwareControl);
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("Flow", SerialPort::NoFlowControl).toInt();
+    int configValue = settings.value("Flow", QSerialPort::NoFlowControl).toInt();
     switch(configValue) {
-    case SerialPort::NoFlowControl:
+    case QSerialPort::NoFlowControl:
         m_PossibleStopBits->setCurrentIndex(0);
         break;
-    case SerialPort::HardwareControl:
+    case QSerialPort::HardwareControl:
         m_PossibleStopBits->setCurrentIndex(1);
         break;
-    case SerialPort::SoftwareControl:
+    case QSerialPort::SoftwareControl:
         m_PossibleStopBits->setCurrentIndex(2);
         break;
     }

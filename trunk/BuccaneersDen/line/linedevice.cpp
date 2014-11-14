@@ -19,7 +19,7 @@
  *
  *****************************************************************************/
 #include "linedevice.h"
-#include <serialport.h>
+#include <QtSerialPort/QtSerialPort>
 #include <QtGui>
 
 LineDevice::LineDevice(QWidget *parent) :
@@ -38,12 +38,12 @@ LineDevice::~LineDevice()
 
 bool LineDevice::ConnectDevice(const QString &DeviceName)
 {
-    m_SerialPort = new SerialPort(DeviceName, this);
+    m_SerialPort = new QSerialPort(DeviceName, this);
     if (!m_SerialPort)
         qDebug() << "New SerialPort failled";
     connect(m_SerialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
 
-    if (!m_SerialPort->open(SerialPort::ReadWrite)) {
+    if (!m_SerialPort->open(QSerialPort::ReadWrite)) {
         qDebug() << "Serial device by default: " << m_SerialPort->portName() << " open fail: " << m_SerialPort->errorString();
         m_Connected = false;
     } else {
@@ -53,24 +53,24 @@ bool LineDevice::ConnectDevice(const QString &DeviceName)
 
     QSettings settings;
     settings.beginGroup("LineDevice");
-    int configValue = settings.value("BaudRate", SerialPort::Rate115200).toInt();
-    if (!m_SerialPort->setRate((SerialPort::Rate)configValue)) {
+    int configValue = settings.value("BaudRate", QSerialPort::Baud115200).toInt();
+    if (!m_SerialPort->setBaudRate((QSerialPort::BaudRate)configValue)) {
         qDebug() << "Set baud rate " <<  configValue << " error.";
     }
-    configValue = settings.value("DataBits", SerialPort::Data8).toInt();
-    if (!m_SerialPort->setDataBits((SerialPort::DataBits)configValue)) {
+    configValue = settings.value("DataBits", QSerialPort::Data8).toInt();
+    if (!m_SerialPort->setDataBits((QSerialPort::DataBits)configValue)) {
         qDebug() << "Set data bits " <<  configValue << " error.";
     }
-    configValue = settings.value("Parity", SerialPort::NoParity).toInt();
-    if (!m_SerialPort->setParity((SerialPort::Parity)configValue)) {
+    configValue = settings.value("Parity", QSerialPort::NoParity).toInt();
+    if (!m_SerialPort->setParity((QSerialPort::Parity)configValue)) {
         qDebug() << "Set parity " <<  configValue << " error.";
     }
-    configValue = settings.value("StopBits", SerialPort::OneStop).toInt();
-    if (!m_SerialPort->setStopBits((SerialPort::StopBits)configValue)) {
+    configValue = settings.value("StopBits", QSerialPort::OneStop).toInt();
+    if (!m_SerialPort->setStopBits((QSerialPort::StopBits)configValue)) {
         qDebug() << "Set stop bits " <<  configValue << " error.";
     }
-    configValue = settings.value("Flow", SerialPort::NoFlowControl).toInt();
-    if (!m_SerialPort->setFlowControl((SerialPort::FlowControl)configValue)) {
+    configValue = settings.value("Flow", QSerialPort::NoFlowControl).toInt();
+    if (!m_SerialPort->setFlowControl((QSerialPort::FlowControl)configValue)) {
         qDebug() << "Set flow " <<  configValue << " error.";
     }
 

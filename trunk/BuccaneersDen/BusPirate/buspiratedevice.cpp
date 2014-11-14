@@ -19,12 +19,13 @@
  *
  *****************************************************************************/
 #include "buspiratedevice.h"
-#include <serialport.h>
+#include <QtSerialPort/QtSerialPort>
 #include "../lib/hexfileparser.h"
 #include "../lib/picmemoryimage.h"
 #include "../lib/ds30bootloader.h"
 
 #include <QtGui>
+#include <QMessageBox>
 
 BusPirateDevice::BusPirateDevice(QObject *parent) :
         QObject(parent),
@@ -41,7 +42,7 @@ BusPirateDevice::~BusPirateDevice()
 
 bool BusPirateDevice::ConnectDevice(const QString &DeviceName)
 {
-    m_SerialPort = new SerialPort(DeviceName, this);
+    m_SerialPort = new QSerialPort(DeviceName, this);
     if (!m_SerialPort)
         qDebug() << "New SerialPort failled";
     connect(m_SerialPort, SIGNAL(readyRead()), this, SLOT(ReadPort()));
@@ -63,7 +64,7 @@ void BusPirateDevice::ClosePort()
 
 bool BusPirateDevice::OpenPort()
 {
-    if (!m_SerialPort->open(SerialPort::ReadWrite)) {
+    if (!m_SerialPort->open(QSerialPort::ReadWrite)) {
         qDebug() << "Serial device by default: " << m_SerialPort->portName() << " open fail: " << m_SerialPort->errorString();
         m_Connected = false;
     } else {
@@ -72,20 +73,20 @@ bool BusPirateDevice::OpenPort()
 
     QSettings settings;
     settings.beginGroup("BusPirate");
-    int configValue = settings.value("BaudRate", SerialPort::Rate115200).toInt();
-    if (!m_SerialPort->setRate((SerialPort::Rate)configValue)) {
+    int configValue = settings.value("BaudRate", QSerialPort::Baud115200).toInt();
+    if (!m_SerialPort->setBaudRate((QSerialPort::BaudRate)configValue)) {
         qDebug() << "Set baud rate " <<  configValue << " error.";
     }
-    if (!m_SerialPort->setDataBits(SerialPort::Data8)) {
+    if (!m_SerialPort->setDataBits(QSerialPort::Data8)) {
         qDebug() << "Set data bits " <<  configValue << " error.";
     }
-    if (!m_SerialPort->setParity(SerialPort::NoParity)) {
+    if (!m_SerialPort->setParity(QSerialPort::NoParity)) {
         qDebug() << "Set parity " <<  configValue << " error.";
     }
-    if (!m_SerialPort->setStopBits(SerialPort::OneStop)) {
+    if (!m_SerialPort->setStopBits(QSerialPort::OneStop)) {
         qDebug() << "Set stop bits " <<  configValue << " error.";
     }
-    if (!m_SerialPort->setFlowControl(SerialPort::NoFlowControl)) {
+    if (!m_SerialPort->setFlowControl(QSerialPort::NoFlowControl)) {
         qDebug() << "Set flow " <<  configValue << " error.";
     }
     return m_Connected;

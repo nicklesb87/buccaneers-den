@@ -31,8 +31,8 @@ class MacroItem;
 class XbdmWriter
 {
 public:
-    XbdmWriter(MacrosModel *macroModel);
-    bool WriteFile(QIODevice *device);
+    XbdmWriter();
+    bool WriteFile(QIODevice *device, MacrosModel *MacroModel);
 
 private:
     void WriteItem(const MacroItem *macro);
@@ -40,7 +40,6 @@ private:
     void WriteMacro(const MacroItem *macro);
 
     QXmlStreamWriter m_XMLWriter;
-    MacrosModel *m_MacroModel;
 };
 
 #endif // XBDMWRITER_H

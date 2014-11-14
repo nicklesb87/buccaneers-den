@@ -43,6 +43,7 @@ private slots:
     void ChooseFont(void);
     void ChooseTextColor(void);
     void ChooseBackgroundColor(void);
+    void MaxCmdLengthChanged(QString NewMaximum);
 
 private:
     void InitBaudsBox(const QString &DeviceName);
@@ -51,6 +52,7 @@ private:
     QPushButton *m_ChangeForeground;
     QPushButton *m_ChangeBackground;
     QComboBox *m_PossibleBauds;
+    QLineEdit *m_MaxCmdLength;
     QString m_CurrentDeviceName;
 };
 
