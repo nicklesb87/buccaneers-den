@@ -19,9 +19,15 @@
  *
  *****************************************************************************/
 #include "buspirateconfig.h"
-#include <serialport.h>
-#include <serialportinfo.h>
+#include <QtSerialPort/QtSerialPort>
 #include <QtGui>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QComboBox>
+#include <QFontDialog>
+#include <QColorDialog>
 
 BusPirateConfig::BusPirateConfig(QWidget *parent) :
     QDialog(parent),
@@ -78,9 +84,19 @@ BusPirateConfig::BusPirateConfig(QWidget *parent) :
     connect(m_PossibleBauds, SIGNAL(currentIndexChanged(int)), this, SLOT(BaudsChanged(int)));
     speedLayout->addWidget(m_PossibleBauds);
 
+    QHBoxLayout *maxCmdLengthLayout = new QHBoxLayout;
+    QLabel *maxCmdLengthLabel = new QLabel(tr("Maximum Command Length"));
+    maxCmdLengthLayout->addWidget(maxCmdLengthLabel);
+    m_MaxCmdLength = new QLineEdit;
+    int configValue = settings.value("MaxCmdLength", 255).toInt();
+    m_MaxCmdLength->setText(QString::number(configValue));
+    connect(m_MaxCmdLength, SIGNAL(textEdited(QString)), this, SLOT(MaxCmdLengthChanged(QString)));
+    maxCmdLengthLayout->addWidget(m_MaxCmdLength);
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addLayout(textLayout);
     mainLayout->addLayout(speedLayout);
+    mainLayout->addLayout(maxCmdLengthLayout);
 
     setLayout(mainLayout);
 }
@@ -172,4 +188,18 @@ void BusPirateConfig::ChooseBackgroundColor()
 void BusPirateConfig::SetCurrentDevice(const QString &DeviceName)
 {
     InitBaudsBox(DeviceName);
+}
+
+void BusPirateConfig::MaxCmdLengthChanged(QString NewMaximum)
+{
+    if (NewMaximum.size() == 0)
+        return;
+
+    bool ok = false;
+    int maxCmdLength = m_MaxCmdLength->text().toInt(&ok);
+    if (ok) {
+        QSettings settings;
+        settings.beginGroup("BusPirate");
+        settings.setValue("MaxCmdLength", maxCmdLength);
+    }
 }

@@ -21,8 +21,12 @@
 #include "mainwindow.h"
 #include "BusPirate/buspirategui.h"
 #include "line/linedevicegui.h"
-#include <serialportinfo.h>
+#include <QtSerialPort/QtSerialPort>
 #include <QtGui>
+#include <QComboBox>
+#include <QStackedWidget>
+#include <QAction>
+#include <QToolBar>
 #include <typeinfo>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -169,7 +173,7 @@ void MainWindow::CreateGadget()
 void MainWindow::UpdateAvailableSerialPort()
 {
     m_SerialPort->clear();
-    foreach (SerialPortInfo info, SerialPortInfo::availablePorts()) {
+    foreach (QSerialPortInfo info, QSerialPortInfo::availablePorts()) {
         m_SerialPort->addItem(info.portName());
     }
 

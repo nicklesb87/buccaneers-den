@@ -23,6 +23,15 @@
 #include "buspiratemacroparser.h"
 #include "../lib/macrospanel.h"
 #include <QtGui>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QStackedLayout>
+#include <QHBoxLayout>
+#include <QSplitter>
+#include <QScrollBar>
+#include <QMessageBox>
 
 ConsolePage::ConsolePage(QWidget *parent) :
     QWidget(parent),
@@ -153,29 +162,49 @@ void ConsolePage::ScrollOutput()
 
 void ConsolePage::SendInput()
 {
+    bool OkToSend = false;
     QString command;
     if (m_InSingleInput) {
-        command = m_SingleInput->text();
-        m_LineCommandHistory.AddCommand(command);
-        m_SingleInput->clear();
-        m_SingleInput->setFocus();
+        QSettings settings;
+        settings.beginGroup("BusPirate");
+        int MaxCmdLength = settings.value("MaxCmdLength", 255).toInt();
+        if (m_SingleInput->text().size() > MaxCmdLength) {
+            QString Message(tr("The Bus Pirate can only accept command of %1 characters or less. Your current command is longer and cannot be sent safely to the Bus Pirate.").arg(MaxCmdLength));
+            QMessageBox::information(dynamic_cast<QWidget *>(parent()), tr("Bus Pirate Limitation"), Message);
+        } else {
+            command = m_SingleInput->text();
+            m_LineCommandHistory.AddCommand(command);
+            m_SingleInput->clear();
+            m_SingleInput->setFocus();
+            OkToSend = true;
+        }
     } else {
         command = m_MultiInput->toPlainText();
         m_MultiLineCommandHistory.AddCommand(command);
         m_MultiInput->clear();
         m_MultiInput->setFocus();
+        OkToSend = true;
     }
-    ExecuteMacro(command);
+    if (OkToSend)
+        ExecuteMacro(command);
 }
 
 void ConsolePage::SaveInput()
 {
     QString command;
     if (m_InSingleInput) {
-        command = m_SingleInput->text();
-        m_LineCommandHistory.AddCommand(command);
-        m_SingleInput->clear();
-        m_SingleInput->setFocus();
+        QSettings settings;
+        settings.beginGroup("BusPirate");
+        int MaxCmdLength = settings.value("MaxCmdLength", 255).toInt();
+        if (m_SingleInput->text().size() > MaxCmdLength) {
+            QString Message(tr("The Bus Pirate can only accept command of %1 characters or less. Your current command is longer and cannot be sent safely to the Bus Pirate.").arg(MaxCmdLength));
+            QMessageBox::information(dynamic_cast<QWidget *>(parent()), tr("Bus Pirate Limitation"), Message);
+        } else {
+            command = m_SingleInput->text();
+            m_LineCommandHistory.AddCommand(command);
+            m_SingleInput->clear();
+            m_SingleInput->setFocus();
+        }
     } else {
         command = m_MultiInput->toPlainText();
         m_MultiLineCommandHistory.AddCommand(command);
@@ -215,23 +244,42 @@ bool ConsolePage::eventFilter(QObject *target, QEvent *event)
 {
     if (target == m_SingleInput) {
         if (event->type() == QEvent::KeyPress) {
+            QSettings settings;
+            settings.beginGroup("BusPirate");
+            int MaxCmdLength = settings.value("MaxCmdLength", 255).toInt();
             QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
             if (keyEvent->key() == Qt::Key_Up) {
                 m_SingleInput->setText(m_LineCommandHistory.GetPrevious(m_SingleInput->text()));
+                event->accept();
             } else if (keyEvent->key() == Qt::Key_Down) {
                 m_SingleInput->setText(m_LineCommandHistory.GetNext(m_SingleInput->text()));
+                event->accept();
+            }
+            if ((m_SingleInput->text().size() >= MaxCmdLength) && !((keyEvent->key() == Qt::Key_Backspace) ||
+                                                                    (keyEvent->key() == Qt::Key_Delete) ||
+                                                                    (keyEvent->key() == Qt::Key_Left) ||
+                                                                    (keyEvent->key() == Qt::Key_Right) ||
+                                                                    (keyEvent->key() == Qt::Key_Shift) ||
+                                                                    (keyEvent->key() == Qt::Key_Enter) ||
+                                                                    (keyEvent->key() == Qt::Key_Home) ||
+                                                                    (keyEvent->key() == Qt::Key_End) ||
+                                                                    (keyEvent->key() == Qt::Key_Return) )) {
+                QString Message(tr("The Bus Pirate can only accept command of %1 characters or less. Your current command has reach this maximum.").arg(MaxCmdLength));
+                QMessageBox::information(dynamic_cast<QWidget *>(parent()), tr("Bus Pirate Limitation"), Message);
             }
         }
     }
     if (target == m_MultiInput) {
         if (event->type() == QEvent::KeyPress) {
             QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-            if ((keyEvent->key() == Qt::Key_Up) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+            if ((keyEvent->key() == Qt::Key_Up) && keyEvent->modifiers().testFlag(Qt::ControlModifier)) {
                 m_MultiInput->clear();
                 m_MultiInput->appendPlainText(m_MultiLineCommandHistory.GetPrevious(m_MultiInput->toPlainText()));
-            } else if ((keyEvent->key() == Qt::Key_Down) && QApplication::keyboardModifiers() == Qt::ControlModifier) {
+                event->accept();
+            } else if ((keyEvent->key() == Qt::Key_Down) && keyEvent->modifiers().testFlag(Qt::ControlModifier)) {
                 m_MultiInput->clear();
                 m_MultiInput->appendPlainText(m_MultiLineCommandHistory.GetNext(m_MultiInput->toPlainText()));
+                event->accept();
             }
         }
     }

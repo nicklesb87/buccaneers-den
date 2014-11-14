@@ -24,6 +24,13 @@
 #include "../lib/macrospanel.h"
 
 #include <QtGui>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QLineEdit>
+#include <QVBoxLayout>
+#include <QSplitter>
+#include <QMessageBox>
+#include <QScrollBar>
 
 LineDeviceGui::LineDeviceGui(QWidget *parent) :
     GadgetGui(parent),
@@ -217,7 +224,7 @@ void LineDeviceGui::SaveInput(void)
 
 void LineDeviceGui::ExecuteMacro(const QString &macro)
 {
-    QByteArray toSend = macro.toAscii();
+    QByteArray toSend = macro.toLatin1();
     toSend.append('\n');
     emit NewCommand(toSend);
 }

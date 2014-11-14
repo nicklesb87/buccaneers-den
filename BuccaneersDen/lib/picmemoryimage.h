@@ -25,6 +25,7 @@
 
 class Pic24MemoryImage {
 public:
+    virtual ~Pic24MemoryImage() {};
     virtual quint32 FlashSize() const = 0;
     virtual quint32 NbPages() const {
         return (FlashSize() / NbRowsInPage() / NbWordsInRow() / 2);

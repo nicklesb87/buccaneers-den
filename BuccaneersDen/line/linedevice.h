@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-class SerialPort;
+class QSerialPort;
 class QPlainTextEdit;
 class QTextDocument;
 class QLineEdit;
@@ -49,7 +49,7 @@ private slots:
     void ReadPort(void);
 
 private:
-    SerialPort *m_SerialPort;
+    QSerialPort *m_SerialPort;
     bool m_Connected;
 };
 

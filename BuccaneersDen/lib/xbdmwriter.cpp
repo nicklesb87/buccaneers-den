@@ -23,13 +23,12 @@
 
 #include <QtGui>
 
-XbdmWriter::XbdmWriter(MacrosModel *macroModel)
-    : m_MacroModel(macroModel)
+XbdmWriter::XbdmWriter()
 {
     m_XMLWriter.setAutoFormatting(true);
 }
 
-bool XbdmWriter::WriteFile(QIODevice *device)
+bool XbdmWriter::WriteFile(QIODevice *device, MacrosModel *MacroModel)
 {
     m_XMLWriter.setDevice(device);
 
@@ -37,9 +36,9 @@ bool XbdmWriter::WriteFile(QIODevice *device)
     m_XMLWriter.writeDTD("<!DOCTYPE xbdm>");
     m_XMLWriter.writeStartElement("xbdm");
     m_XMLWriter.writeAttribute("version", "1.0");
-    for (int i = 0; i < m_MacroModel->rowCount(); ++i)
+    for (int i = 0; i < MacroModel->rowCount(); ++i)
     {
-        QModelIndex current = m_MacroModel->index(i, 0);
+        QModelIndex current = MacroModel->index(i, 0);
         MacroItem *item = static_cast<MacroItem*>(current.internalPointer());
         WriteItem(item);
     }

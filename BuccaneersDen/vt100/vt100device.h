@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-class SerialPort;
+class QSerialPort;
 class QPlainTextEdit;
 
 class vt100Device : public QWidget
@@ -47,7 +47,7 @@ private slots:
     void ReadPort();
 
 private:
-    SerialPort *m_SerialPort;
+    QSerialPort *m_SerialPort;
     QPlainTextEdit *m_ConsoleDisplay;
 };
 

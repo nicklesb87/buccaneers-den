@@ -25,6 +25,13 @@
 #include "../lib/xbdmwriter.h"
 
 #include <QtGui>
+#include <QLabel>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QInputDialog>
 
 MacrosPanel::MacrosPanel(QString macrosFileName, QWidget *parent) :
     QWidget(parent)
@@ -100,8 +107,8 @@ void MacrosPanel::SaveMacros(const QString &macrosFileName)
         return;
     }
 
-    XbdmWriter writer(reinterpret_cast<MacrosModel *>(m_MacrosWidget->model()));
-    writer.WriteFile(&file);
+    XbdmWriter writer;
+    writer.WriteFile(&file,reinterpret_cast<MacrosModel *>(m_MacrosWidget->model()));
 }
 
 void MacrosPanel::LoadMacrosFrom()

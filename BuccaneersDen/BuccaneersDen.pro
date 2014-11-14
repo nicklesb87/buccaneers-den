@@ -1,13 +1,12 @@
 TARGET = BuccaneersDen
 TEMPLATE = app
-INCLUDEPATH += ../qserialdevice/include
+CONFIG += warn_on
+QT += widgets serialport
 
 CONFIG(debug, debug|release) {
     DESTDIR = debug
-    LIBS += ../qserialdevice/src/debug/libSerialPort.a
 } else {
     DESTDIR = release
-    LIBS += ../qserialdevice/src/release/libSerialPort.a
 }
 
 unix:LIBS += -ludev
