@@ -17,7 +17,9 @@ Configuration options are dependants on the currently selected device.
 
 You can save macro with the "Save macro" button or by dragging them to the macro panel. To use a macro, you can _right click_ and choose activate or _double click_ on the code column of the macro. Directly activating a macro does not but them in the command history. _Clicking_ on the name column allow you to change the macro name. You can drag macros to the input edit box if you want to modify them. The _right click_ also allow you to create folder and delete macro. You can move or copy macro using _drag&drop_. To change between operation, you _press shift_ *before* beginning the drag.
 
-Macros are saved automatically in a xml file in your home directory under .buccaneers. There is no limit on the number or length of the macros. You can have multiples macro with the same name. You can export your macros or import some using the two button at the bottom of the macros panel.
+Macros are saved automatically in a xml file in your home directory under .buccaneers. There is no limit on the number of the macros. The length of
+command can be limited by the device you are connected to. The Bus Pirate
+only allow command of 255 characters or less. You can have multiples macro with the same name. You can export your macros or import some using the two button at the bottom of the macros panel.
 
 Macros are not shared between device.
 
