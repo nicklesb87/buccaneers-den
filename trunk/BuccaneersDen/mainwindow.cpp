@@ -134,7 +134,7 @@ void MainWindow::DisconnectDevice()
     delete m_GadgetGui;
     m_GadgetGui = 0;
 
-    setWindowState(windowState() & !Qt::WindowFullScreen);
+    setWindowState(windowState());
     resize(minimumSize());
 
     m_DeviceType->setDisabled(false);

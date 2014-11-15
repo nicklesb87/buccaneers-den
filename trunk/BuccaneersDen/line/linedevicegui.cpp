@@ -23,14 +23,7 @@
 #include "linedeviceconfig.h"
 #include "../lib/macrospanel.h"
 
-#include <QtGui>
-#include <QPlainTextEdit>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QSplitter>
-#include <QMessageBox>
-#include <QScrollBar>
+#include <QtWidgets>
 
 LineDeviceGui::LineDeviceGui(QWidget *parent) :
     GadgetGui(parent),
@@ -105,7 +98,7 @@ void LineDeviceGui::SetupLog(void)
     m_LogFileName = QDir::homePath();
     m_LogFileName += "/.buccaneers/LineDevice/Logs/";
     m_LogFileName += "LD_Console-";
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
     m_LogFileName += now.toString(Qt::ISODate).replace(":", "-");
 #else
     m_LogFileName += now.toString(Qt::ISODate);

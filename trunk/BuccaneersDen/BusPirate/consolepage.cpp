@@ -22,16 +22,7 @@
 #include "buspiratedevice.h"
 #include "buspiratemacroparser.h"
 #include "../lib/macrospanel.h"
-#include <QtGui>
-#include <QPlainTextEdit>
-#include <QPushButton>
-#include <QLineEdit>
-#include <QVBoxLayout>
-#include <QStackedLayout>
-#include <QHBoxLayout>
-#include <QSplitter>
-#include <QScrollBar>
-#include <QMessageBox>
+#include <QtWidgets>
 
 ConsolePage::ConsolePage(QWidget *parent) :
     QWidget(parent),
@@ -142,7 +133,7 @@ void ConsolePage::SetupLog()
     m_LogFileName = QDir::homePath();
     m_LogFileName += "/.buccaneers/BusPirate/Logs/";
     m_LogFileName += "BDen_Console-";
-#if defined(Q_WS_WIN)
+#if defined(Q_OS_WIN)
     m_LogFileName += now.toString(Qt::ISODate).replace(":", "-");
 #else
     m_LogFileName += now.toString(Qt::ISODate);

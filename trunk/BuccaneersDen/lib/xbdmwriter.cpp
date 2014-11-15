@@ -21,7 +21,7 @@
 #include "xbdmwriter.h"
 #include "macrosmodel.h"
 
-#include <QtGui>
+#include <QtCore>
 
 XbdmWriter::XbdmWriter()
 {
