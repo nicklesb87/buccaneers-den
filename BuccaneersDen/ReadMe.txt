@@ -19,9 +19,11 @@ http://groups.google.com/group/buccaneers-den
   change between operation, you press shift before beginning the drag.
 
   Macros are saved automatically in a xml file in your home directory under
-  .buccaneers. There is no limit on the number or length of the macros. You
-  can have multiples macro with the same name. You can export your macros or
-  import some using the two button at the bottom of the macros panel.
+  .buccaneers. There is no limit on the number of the macros. The length of
+  command can be limited by the device you are connected to.  The Bus Pirate
+  only allow command of 255 characters or less. You can have multiples macro
+  with the same name. You can export your macros or import some using the
+  two button at the bottom of the macros panel.
 
   Macros are not shared between device.
 

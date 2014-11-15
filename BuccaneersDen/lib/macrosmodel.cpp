@@ -20,7 +20,7 @@
  *****************************************************************************/
 #include "macrosmodel.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QInputDialog>
 #include <QStringList>
 #include <QMimeData>
@@ -241,14 +241,6 @@ bool MacrosModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int
 
     if (!(data->hasFormat("application/vnd.text.list") || data->hasFormat("text/plain")))
         return false;
-
-    int beginRow;
-    if (row != -1)
-        beginRow = row;
-    else if (parent.isValid())
-        beginRow = parent.row();
-    else
-        beginRow = rowCount();
 
     if (data->hasFormat("application/vnd.text.list")) {
         AddMacroFromVnd(data, row, parent);

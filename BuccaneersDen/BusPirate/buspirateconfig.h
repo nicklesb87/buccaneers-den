@@ -40,7 +40,7 @@ public slots:
 
 private slots:
     void BaudsChanged(int index);
-    void ChooseFont(void);
+    void SelectFont(void);
     void ChooseTextColor(void);
     void ChooseBackgroundColor(void);
     void MaxCmdLengthChanged(QString NewMaximum);

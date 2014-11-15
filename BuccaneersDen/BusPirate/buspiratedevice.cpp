@@ -24,8 +24,7 @@
 #include "../lib/picmemoryimage.h"
 #include "../lib/ds30bootloader.h"
 
-#include <QtGui>
-#include <QMessageBox>
+#include <QtWidgets>
 
 BusPirateDevice::BusPirateDevice(QObject *parent) :
         QObject(parent),
@@ -129,7 +128,7 @@ bool BusPirateDevice::ReadVersion()
     QByteArray byteArray("i\n");
     m_SerialPort->write(byteArray);
     m_SerialPort->flush();
-    while (m_SerialPort->waitForReadyRead(20)) {
+    while (m_SerialPort->waitForReadyRead(50)) {
         byteArray += m_SerialPort->readAll();
     }
 
@@ -170,10 +169,16 @@ void BusPirateDevice::ReadFirmwareVersion(const QString &line)
 
 void BusPirateDevice::ReadFirmwareRevision(const QString &line)
 {
-    QRegExp FirmwareRevision("\\(r([0-9]+)\\)");
-    if (-1 != FirmwareRevision.indexIn(line)) {
-        QString capture = FirmwareRevision.cap(1);
+    QRegExp FirmwareRevision5("\\(r([0-9]+)\\)");
+    if (-1 != FirmwareRevision5.indexIn(line)) {
+        QString capture = FirmwareRevision5.cap(1);
         m_FirmwareRevision = capture.toDouble();
+    } else {
+        QRegExp FirmwareRevision6("r([0-9]+)");
+        if (-1 != FirmwareRevision6.indexIn(line)) {
+            QString capture = FirmwareRevision6.cap(1);
+            m_FirmwareRevision = capture.toDouble();
+        }
     }
 }
 

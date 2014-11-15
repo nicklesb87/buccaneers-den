@@ -20,14 +20,7 @@
  *****************************************************************************/
 #include "buspirateconfig.h"
 #include <QtSerialPort/QtSerialPort>
-#include <QtGui>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QComboBox>
-#include <QFontDialog>
-#include <QColorDialog>
+#include <QtWidgets>
 
 BusPirateConfig::BusPirateConfig(QWidget *parent) :
     QDialog(parent),
@@ -65,7 +58,7 @@ BusPirateConfig::BusPirateConfig(QWidget *parent) :
     m_TextExample->setPalette(palette);
 
     m_ChangeFont = new QPushButton(tr("Change Font"));
-    connect(m_ChangeFont, SIGNAL(clicked(void)), this, SLOT(ChooseFont(void)));
+    connect(m_ChangeFont, SIGNAL(clicked(void)), this, SLOT(SelectFont(void)));
     m_ChangeForeground = new QPushButton(tr("Text Color"));
     connect(m_ChangeForeground, SIGNAL(clicked(void)), this, SLOT(ChooseTextColor(void)));
     m_ChangeBackground = new QPushButton(tr("Background Color"));
@@ -145,7 +138,7 @@ void BusPirateConfig::BaudsChanged(int index)
     }
 }
 
-void BusPirateConfig::ChooseFont()
+void BusPirateConfig::SelectFont()
 {
     QFont font = QFontDialog::getFont(0, m_TextExample->font());
     m_TextExample->setFont(font);

@@ -44,7 +44,7 @@ private slots:
     void ParityChanged(int index);
     void StopBitsChanged(int index);
     void FlowChanged(int index);
-    void ChooseFont();
+    void SelectFont();
     void ChooseTextColor();
     void ChooseBackgroundColor();
 

@@ -21,7 +21,7 @@
 #include "xbdmreader.h"
 #include "macrosmodel.h"
 
-#include <QtGui>
+#include <QtCore>
 
 XbdmReader::XbdmReader(MacrosModel *macroModel)
     : m_MacroModel(macroModel)

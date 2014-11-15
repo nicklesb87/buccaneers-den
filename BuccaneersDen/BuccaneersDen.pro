@@ -1,7 +1,7 @@
 TARGET = BuccaneersDen
 TEMPLATE = app
 CONFIG += warn_on
-QT += widgets serialport
+QT += core widgets serialport
 
 CONFIG(debug, debug|release) {
     DESTDIR = debug

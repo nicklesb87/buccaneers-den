@@ -24,7 +24,7 @@
 #include "../lib/xbdmreader.h"
 #include "../lib/xbdmwriter.h"
 
-#include <QtGui>
+#include <QtWidgets>
 #include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>

@@ -20,12 +20,7 @@
  *****************************************************************************/
 #include "firmwarepage.h"
 #include "buspiratedevice.h"
-#include <QtGui>
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QProgressBar>
-#include <QFileDialog>
+#include <QtWidgets>
 
 FirmwarePage::FirmwarePage(BusPirateDevice *BusPirate, QWidget *parent) :
     QWidget(parent),

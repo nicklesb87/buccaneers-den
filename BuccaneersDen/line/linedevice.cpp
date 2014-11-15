@@ -20,7 +20,7 @@
  *****************************************************************************/
 #include "linedevice.h"
 #include <QtSerialPort/QtSerialPort>
-#include <QtGui>
+#include <QtWidgets>
 
 LineDevice::LineDevice(QWidget *parent) :
     QWidget(parent),
