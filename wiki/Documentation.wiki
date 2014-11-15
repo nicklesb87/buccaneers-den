@@ -7,7 +7,7 @@ Buccaneer's Den as two mode: Bus Pirate and Line console
 
 = Compilation =
 
-To compile Buccaneer's Den, you will need Qt and QSerialDevice. You can install the Qt SDK from [http://qt.nokia.com/]. QSerialDevice is found at [http://gitorious.net/qserialdevice]. Since it is in heavy development and not distributed in binary form for Windows or Mac or with Linux distribution, we have included it in our subversion and created an all.pro project file that compile it before compiling Buccaneer's Den.
+To compile Buccaneer's Den, you will need Qt. You can install the Qt SDK from [http://www.qt.io/]. 
 
 The simplest way to compile is to open the all.pro file in !QtCreator and _click_ the build button. Pay attention to the bottom right window, it will tell you where the executable is located so that you don't have to open !QtCreator every time you want to start Buccaneer's Den. 
 
